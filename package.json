@@ -1,0 +1,10 @@
+{
+  "name": "git-kpi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "googleapis": "^67.1.1",
+    "node-fetch": "^2.6.1"
+  }
+}
