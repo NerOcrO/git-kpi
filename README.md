@@ -14,7 +14,7 @@
 
 ## Usage
 
-- `node index.js [OWNER] [REPO]` ;
+- Voir `index.js` ;
 - A savoir qu'il y a un quota de 5000 requêtes ;
 - Ne fonctionne qu'avec GitHub pour le moment.
 
@@ -25,3 +25,15 @@
 - [Rate limiting](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) ;
 - [Google Sheets: Node.js Quickstart](https://developers.google.com/sheets/api/quickstart/nodejs) ;
 - [REST Resource: spreadsheets.values](https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values).
+
+## Par développeurs
+
+Liste toutes les pull request d'un développeur dans un onglet (devXXX).
+
+### Inconvénient
+
+Quand plusieurs développeurs ont travaillé sur une même pull request, seul celui qui l'a créée est pris en compte.
+
+## Par itération
+
+Liste toutes les pull request d'une itération dans un onglet (iteXXX).

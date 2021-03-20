@@ -9,29 +9,19 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 // time.
 const TOKEN_PATH = 'token.json'
 
-const googleSheetRepository = (spreadsheetId, values) => {
-  // Load client secrets from a local file.
-  fs.readFile('credentials.json', (error, content) => {
-    if (error) return console.log('Error loading client secret file:', error)
-
-    // Authorize a client with credentials, then call the Google Sheets API.
-    authorize(JSON.parse(content), updateGoogleSheet(spreadsheetId, values))
-  })
-}
-
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+const authorize = (credentials, callback) => {
   const { client_secret, client_id, redirect_uris } = credentials.installed
   const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (error, token) => {
-    if (error) return getNewToken(oAuth2Client, callback)
+    if (error) return _getNewToken(oAuth2Client, callback)
 
     oAuth2Client.setCredentials(JSON.parse(token))
 
@@ -45,7 +35,7 @@ function authorize(credentials, callback) {
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-function getNewToken(oAuth2Client, callback) {
+const _getNewToken = (oAuth2Client, callback) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
@@ -76,37 +66,4 @@ function getNewToken(oAuth2Client, callback) {
   })
 }
 
-/**
- * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
- */
-const updateGoogleSheet = (spreadsheetId, values, numberOfDev = 15) => async (auth) => {
-  const sheets = google.sheets({ version: 'v4', auth })
-
-  try {
-    const sheetName = (index) => `dev${index}!A2:F`
-    const ranges = []
-
-    for (let index = 1; index < numberOfDev + 1; index++) {
-      ranges.push(sheetName(index))
-    }
-    await sheets.spreadsheets.values.batchClear({ spreadsheetId, ranges })
-
-    let range = ''
-    index = 1
-    for (const value of Object.keys(values)) {
-      range = sheetName(index++)
-
-      await sheets.spreadsheets.values.update({
-        spreadsheetId,
-        range,
-        valueInputOption: 'USER_ENTERED',
-        requestBody: { values: values[value] },
-      })
-    }
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
-
-module.exports = googleSheetRepository
+module.exports = authorize

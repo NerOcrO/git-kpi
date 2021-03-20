@@ -4,7 +4,7 @@ const gitHubRepository = (token, owner, repo) => {
   return {
     pullRequests: async (per_page = 100) => {
       const dayDiff = (start, end) => {
-        return Number(Number(end.getTime() / 86400000 - start.getTime() / 86400000).toFixed(0))
+        return Number(Number(end.getTime() / 86_400_000 - start.getTime() / 86_400_000).toFixed(0))
       }
       const pullRequests = []
 
@@ -28,7 +28,6 @@ const gitHubRepository = (token, owner, repo) => {
               numberOfReviewComments: 0,
             })
           }
-
         })
       }
       catch (error) {
@@ -38,26 +37,7 @@ const gitHubRepository = (token, owner, repo) => {
       return pullRequests
     },
 
-    addReviewComments: async (pullRequests) => {
-      return Promise.all(pullRequests.map(async (pullRequest) => {
-        try {
-          const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/pulls/${pullRequest.id}/comments`,
-            {
-              headers: { Authorization: `token ${token}` }
-            }
-          )
-          const reviewComments = await response.json()
-
-          pullRequest.numberOfReviewComments = reviewComments.length
-
-          return pullRequest
-        }
-        catch (error) {
-          console.error(error)
-        }
-      }))
-    },
+    addReviewComments: addReviewComments(token, owner, repo),
 
     transformForGoogleSheets: (pullRequestsAndReviewComments) => {
       const dataForGoogleSheets = {}
